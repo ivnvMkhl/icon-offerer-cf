@@ -1,0 +1,125 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - '.functionconfig.json'
+      - 'package.json'             
+      - 'tests/**'                  
+      - '.github/workflows/**'      
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - '.functionconfig.json'
+      - 'package.json'
+      - 'tests/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm run test
+      env:
+        AI_API_TOKEN: ${{ secrets.AI_API_TOKEN }}
+        AI_API_URL: ${{ secrets.AI_API_URL }}
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          test-results/
+          coverage/
+        retention-days: 7
+
+  deploy:
+    name: Deploy to Yandex Cloud
+    needs: test
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'push' && 
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') &&
+      (
+        contains(github.event.head_commit.modified, 'src/') ||
+        contains(github.event.head_commit.added, 'src/') ||
+        contains(github.event.head_commit.modified, '.functionconfig.json') ||
+        contains(github.event.head_commit.added, '.functionconfig.json')
+      )
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install YCNF CLI
+      run: npm install -g ycnf
+      
+    - name: Setup Yandex Cloud CLI
+      run: |
+        # Install YC CLI
+        curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+        echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
+        
+    - name: Configure Yandex Cloud
+      run: |
+        # Create YC config directory
+        mkdir -p ~/.config/yandex-cloud
+        
+        # Create config file with service account key
+        cat > ~/.config/yandex-cloud/config.yaml << EOF
+        current: default
+        profiles:
+          default:
+            token: ${{ secrets.YC_TOKEN }}
+            cloud-id: ${{ secrets.YC_CLOUD_ID }}
+            folder-id: ${{ secrets.YC_FOLDER_ID }}
+        EOF
+        
+    - name: Verify YC CLI configuration
+      run: |
+        yc config list --format=table
+        
+    - name: Deploy function
+      run: |
+        echo "Deploying function to Yandex Cloud..."
+        ycnf public
+      env:
+        YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        YC_PROFILE: ${{ secrets.YC_PROFILE }}
+        
+    - name: Check function status
+      run: |
+        echo "Checking function status..."
+        ycnf check
+      env:
+        YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        YC_PROFILE: ${{ secrets.YC_PROFILE }}

@@ -1,5 +1,5 @@
 /**
- * Интеграционные тесты с реальным AI API
+ * Интеграционные тесты AI API
  * Требуют переменные окружения TOKEN и BASE_URL
  */
 
@@ -7,7 +7,6 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import dotenv from 'dotenv';
 import { handler } from '../src/index.js';
 
-// Загружаем переменные окружения из .env файла
 dotenv.config();
 
 describe('Интеграционные тесты с реальным AI API', () => {
@@ -35,7 +34,6 @@ describe('Интеграционные тесты с реальным AI API', (
 
     const result = await handler(event, context);
 
-    // Проверяем успешный ответ
     expect(result.statusCode).toBe(200);
     
     const body = JSON.parse(result.body);
@@ -72,7 +70,6 @@ describe('Интеграционные тесты с реальным AI API', (
     expect(body.data.icon_names.length).toBeGreaterThan(0);
     expect(body.meta.platform).toBe('unicode');
 
-    // Проверяем, что иконки содержат Unicode символы сердца
     const iconNames = body.data.icon_names;
     expect(iconNames.some(icon => 
       icon.includes('❤') || icon.includes('💖') || icon.includes('♥') || 
@@ -95,7 +92,6 @@ describe('Интеграционные тесты с реальным AI API', (
 
     const result = await handler(event, context);
 
-    // Проверяем успешный ответ
     expect(result.statusCode).toBe(200);
     
     const body = JSON.parse(result.body);
@@ -103,7 +99,6 @@ describe('Интеграционные тесты с реальным AI API', (
     expect(body.data.icon_names.length).toBeGreaterThan(0);
     expect(body.meta.platform).toBe('mui');
 
-    // Проверяем, что хотя бы одна иконка содержит ключевые слова настроек
     const iconNames = body.data.icon_names.map(icon => icon.toLowerCase());
     expect(iconNames.some(icon => 
       icon.includes('settings') || icon.includes('gear') || icon.includes('config')
