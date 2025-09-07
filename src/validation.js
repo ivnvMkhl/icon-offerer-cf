@@ -23,8 +23,14 @@ const MAX_REQUEST_LENGTH = 50;
 // Минимальная длина запроса
 const MIN_REQUEST_LENGTH = 1;
 
-// Количество иконок в ответе
-const EXPECTED_ICON_COUNT = 3;
+// Количество иконок в ответе по умолчанию
+const DEFAULT_ICON_COUNT = 5;
+
+// Минимальное количество иконок
+const MIN_ICON_COUNT = 1;
+
+// Максимальное количество иконок
+const MAX_ICON_COUNT = 10;
 
 /**
  * Валидирует платформу иконок
@@ -52,6 +58,48 @@ function validatePlatform(platform) {
   }
 
   return { isValid: true };
+}
+
+/**
+ * Валидирует параметр количества иконок
+ * @param {number} qtty - Количество иконок для валидации
+ * @returns {Object} Результат валидации
+ */
+function validateQuantity(qtty) {
+  if (qtty === undefined || qtty === null) {
+    return { isValid: true, quantity: DEFAULT_ICON_COUNT };
+  }
+
+  if (typeof qtty !== "number") {
+    return {
+      isValid: false,
+      error: "Invalid Quantity",
+      message: "Quantity must be a number",
+      details: `Quantity parameter must be a number between ${MIN_ICON_COUNT} and ${MAX_ICON_COUNT}`,
+    };
+  }
+
+  if (!Number.isInteger(qtty)) {
+    return {
+      isValid: false,
+      error: "Invalid Quantity",
+      message: "Quantity must be an integer",
+      details: `Quantity parameter must be an integer between ${MIN_ICON_COUNT} and ${MAX_ICON_COUNT}`,
+    };
+  }
+
+  if (qtty < MIN_ICON_COUNT || qtty > MAX_ICON_COUNT) {
+    return {
+      isValid: false,
+      error: "Invalid Quantity",
+      message: "Quantity out of range",
+      details: `Quantity must be between ${MIN_ICON_COUNT} and ${MAX_ICON_COUNT}. Received: ${qtty}`,
+      min_allowed: MIN_ICON_COUNT,
+      max_allowed: MAX_ICON_COUNT,
+    };
+  }
+
+  return { isValid: true, quantity: qtty };
 }
 
 /**
@@ -128,19 +176,26 @@ function validateRequestBody(body) {
     return requestValidation;
   }
 
+  const quantityValidation = validateQuantity(body.qtty);
+  if (!quantityValidation.isValid) {
+    return quantityValidation;
+  }
+
   return {
     isValid: true,
     platform: body.platform,
     request: requestValidation.trimmedRequest,
+    quantity: quantityValidation.quantity,
   };
 }
 
 /**
  * Валидирует ответ AI
  * @param {Object} responseData - Данные ответа от AI
+ * @param {number} expectedCount - Ожидаемое количество иконок
  * @returns {Object} Результат валидации
  */
-function validateAIResponse(responseData) {
+function validateAIResponse(responseData, expectedCount = DEFAULT_ICON_COUNT) {
   if (!responseData.icon_names) {
     return {
       isValid: false,
@@ -155,10 +210,10 @@ function validateAIResponse(responseData) {
     };
   }
 
-  if (responseData.icon_names.length !== EXPECTED_ICON_COUNT) {
+  if (responseData.icon_names.length !== expectedCount) {
     return {
       isValid: false,
-      error: `Expected ${EXPECTED_ICON_COUNT} icons, received: ${responseData.icon_names.length}`,
+      error: `Expected ${expectedCount} icons, received: ${responseData.icon_names.length}`,
     };
   }
 
@@ -209,9 +264,12 @@ module.exports = {
   SUPPORTED_PLATFORMS,
   MAX_REQUEST_LENGTH,
   MIN_REQUEST_LENGTH,
-  EXPECTED_ICON_COUNT,
+  DEFAULT_ICON_COUNT,
+  MIN_ICON_COUNT,
+  MAX_ICON_COUNT,
   validatePlatform,
   validateRequest,
+  validateQuantity,
   validateRequestBody,
   validateAIResponse,
   validateEnvironmentVariables,

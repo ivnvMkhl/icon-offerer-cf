@@ -4,18 +4,20 @@
 
 /**
  * Создает системный промпт для AI
+ * @param {number} quantity - Количество иконок для возврата
  * @returns {string} Системный промпт
  */
-function getSystemPrompt() {
-  return `Ты — эксперт по дизайн-системам и иконографике. Твоя задача — по описанию от пользователя (request) подобрать три точных названия иконок из указанной библиотеки (platform).
+function getSystemPrompt(quantity = 5) {
+  return `Ты — эксперт по дизайн-системам и иконографике. Твоя задача — по описанию от пользователя (request) подобрать точные названия иконок из указанной библиотеки (platform).
 
 КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА:
 1. Отвечай ТОЛЬКО в формате валидного JSON без каких-либо пояснений.
-2. Структура ответа ДОЛЖНА быть строго такой: { "icon_names": ["string", "string", "string"] }
-3. Всегда возвращай ровно три варианта иконок.
-4. Первая иконка в списке — наиболее подходящая по запросу, остальные — альтернативные варианты.
+2. Структура ответа ДОЛЖНА быть строго такой: { "icon_names": ["string", "string", ...] }
+3. Возвращай ровно ${quantity} вариантов иконок.
+4. Первая иконка в списке — наиболее подходящая по запросу, остальные — альтернативные варианты в порядке убывания релевантности.
 5. Используй только официальные названия иконок из запрашиваемой платформы.
-6. Для платформы unicode возвращай коды в формате ["U+XXXX", "U+XXXX", "U+XXXX"].
+6. Для платформы unicode возвращай коды в формате ["U+XXXX", "U+XXXX", ...].
+7. Если не можешь найти ${quantity} подходящих иконок, верни столько, сколько найдешь (но не менее 1).
 
 Доступные библиотеки иконок:
 - Ant Design Icons (antd)
@@ -56,15 +58,16 @@ function getUserPrompt(platform, request) {
  * Создает полный промпт для AI API
  * @param {string} platform - Платформа иконок
  * @param {string} request - Запрос пользователя
+ * @param {number} quantity - Количество иконок для возврата
  * @returns {Object} Промпт для отправки в AI API
  */
-function createPrompt(platform, request) {
+function createPrompt(platform, request, quantity = 3) {
   return {
     model: "deepseek-coder",
     messages: [
       {
         role: "system",
-        content: getSystemPrompt(),
+        content: getSystemPrompt(quantity),
       },
       {
         role: "user",
@@ -72,7 +75,7 @@ function createPrompt(platform, request) {
       },
     ],
     temperature: 0.1,
-    max_tokens: 50,
+    max_tokens: Math.max(50, quantity * 20), 
   };
 }
 

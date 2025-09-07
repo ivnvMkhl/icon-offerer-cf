@@ -9,13 +9,14 @@ const { validateAIResponse } = require('./validation');
  * Отправляет запрос к AI API
  * @param {string} platform - Платформа иконок
  * @param {string} request - Запрос пользователя
+ * @param {number} quantity - Количество иконок для возврата
  * @returns {Promise<Object>} Результат запроса к AI
  */
-async function callAIAPI(platform, request) {
+async function callAIAPI(platform, request, quantity = 3) {
   const token = process.env.TOKEN;
   const baseUrl = process.env.BASE_URL;
 
-  const prompt = createPrompt(platform, request);
+  const prompt = createPrompt(platform, request, quantity);
 
   const response = await fetch(baseUrl, {
     method: "POST",
@@ -53,7 +54,7 @@ async function callAIAPI(platform, request) {
     );
   }
 
-  const validation = validateAIResponse(responseData);
+  const validation = validateAIResponse(responseData, quantity);
   if (!validation.isValid) {
     throw new Error(validation.error);
   }

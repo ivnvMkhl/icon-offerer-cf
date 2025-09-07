@@ -31,24 +31,27 @@ POST /function
 ```json
 {
   "platform": "antd",
-  "request": "поиск"
+  "request": "поиск",
+  "qtty": 5
 }
 ```
 
 **Параметры:**
 - `platform` (обязательный) - платформа иконок из списка поддерживаемых
 - `request` (обязательный) - описание иконки на естественном языке (максимум 50 символов)
+- `qtty` (опциональный) - количество иконок для возврата (1-10, по умолчанию 5)
 
 ### Ответ
 ```json
 {
   "success": true,
   "data": {
-    "icon_names": ["SearchOutlined", "SearchFilled", "SearchCircleOutlined"]
+    "icon_names": ["SearchOutlined", "SearchFilled", "SearchCircleOutlined", "SearchIcon", "MagnifyingGlassIcon"]
   },
   "meta": {
     "platform": "antd",
     "request": "поиск",
+    "quantity": 5,
     "model": "deepseek-coder"
   }
 }
@@ -57,20 +60,25 @@ POST /function
 ### Примеры запросов
 
 ```bash
-# Поиск иконки поиска в Ant Design
+# Поиск 3 иконок поиска в Ant Design (по умолчанию)
 curl -X POST https://your-function-url \
   -H "Content-Type: application/json" \
   -d '{"platform": "antd", "request": "поиск"}'
 
-# Поиск иконки пользователя в FontAwesome
+# Поиск 5 иконок пользователя в FontAwesome
 curl -X POST https://your-function-url \
   -H "Content-Type: application/json" \
-  -d '{"platform": "fa", "request": "пользователь"}'
+  -d '{"platform": "fa", "request": "пользователь", "qtty": 5}'
 
-# Поиск иконки настроек в Material UI
+# Поиск 1 иконки настроек в Material UI
 curl -X POST https://your-function-url \
   -H "Content-Type: application/json" \
-  -d '{"platform": "mui", "request": "настройки"}'
+  -d '{"platform": "mui", "request": "настройки", "qtty": 1}'
+
+# Поиск 10 иконок стрелок в Lucide
+curl -X POST https://your-function-url \
+  -H "Content-Type: application/json" \
+  -d '{"platform": "lucide", "request": "стрелка", "qtty": 10}'
 ```
 
 ## Установка и развертывание
@@ -114,10 +122,13 @@ secrets.YC_FOLDER_ID
 
 ## Особенности
 
-- **Валидация входных данных** - проверка корректности платформы и запроса
+- **CORS поддержка** - функция поддерживает CORS для использования в веб-приложениях
+- **Валидация входных данных** - проверка корректности платформы, запроса и количества
 - **Обработка ошибок** - детальные сообщения об ошибках
-- **Ограничения** - максимальная длина запроса 50 символов
+- **Ограничения** - максимальная длина запроса 50 символов, количество иконок 1-10
 - **AI интеграция** - использует модель deepseek-coder для понимания естественного языка
+- **Гибкое количество** - возможность запросить от 1 до 10 иконок (по умолчанию 3)
+- **Умный AI** - AI сам решает количество иконок, если не указан параметр qtty
 
 ## Документация
 

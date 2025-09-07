@@ -79,12 +79,17 @@ module.exports.handler = async function (event, context) {
 
   try {
     // Вызов AI API
-    const responseData = await callAIAPI(bodyValidation.platform, bodyValidation.request);
+    const responseData = await callAIAPI(
+      bodyValidation.platform, 
+      bodyValidation.request, 
+      bodyValidation.quantity
+    );
 
     // Возврат успешного ответа
     return createSuccessResponse(responseData, {
       platform: bodyValidation.platform,
       request: bodyValidation.request,
+      quantity: bodyValidation.quantity,
       model: "deepseek-coder",
     });
   } catch (error) {
