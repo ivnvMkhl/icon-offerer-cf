@@ -7,6 +7,8 @@
   "logging": true,
   "description": "Template function for YCNF CLI",
   "entrypoint": "index.handler",
+  "environment": null,
+  "tags": ["icon-offerer"],
   "serviceAccountId": null,
   "networkId": null
 }
