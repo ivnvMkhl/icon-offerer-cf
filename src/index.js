@@ -17,17 +17,14 @@ import { callAIAPI } from './aiService.js';
  * @returns {Promise<Object>} HTTP ответ
  */
 const handler = async function (event, context) {
-  // Обработка preflight OPTIONS запросов
   if (event.httpMethod === "OPTIONS") {
     return handlePreflightRequest();
   }
 
-  // Проверка метода запроса
   if (event.httpMethod !== "POST") {
     return createMethodNotAllowedResponse();
   }
 
-  // Валидация переменных окружения
   const envValidation = validateEnvironmentVariables();
   if (!envValidation.isValid) {
     return createConfigurationErrorResponse(
@@ -37,7 +34,6 @@ const handler = async function (event, context) {
     );
   }
 
-  // Парсинг тела запроса
   if (!event.body) {
     return createValidationErrorResponse(
       "Bad Request",
@@ -57,7 +53,6 @@ const handler = async function (event, context) {
     );
   }
 
-  // Валидация тела запроса
   const bodyValidation = validateRequestBody(body);
   if (!bodyValidation.isValid) {
     const additionalData = {};
@@ -78,14 +73,12 @@ const handler = async function (event, context) {
   }
 
   try {
-    // Вызов AI API
     const responseData = await callAIAPI(
       bodyValidation.platform, 
       bodyValidation.request, 
       bodyValidation.quantity
     );
 
-    // Возврат успешного ответа
     return createSuccessResponse(responseData, {
       platform: bodyValidation.platform,
       request: bodyValidation.request,

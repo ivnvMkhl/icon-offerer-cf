@@ -115,9 +115,14 @@ npx ycnf delete
 Добавьте в GitHub репозиторий следующие секреты:
 
 ```
+# Нужны для деплоя
 secrets.YC_TOKEN
 secrets.YC_CLOUD_ID
 secrets.YC_FOLDER_ID
+
+# Нужны для тестов
+secrets.AI_API_TOKEN
+secrets.AI_API_URL
 ```
 
 ## Особенности
