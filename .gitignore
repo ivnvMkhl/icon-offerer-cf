@@ -5,6 +5,9 @@ node_modules/
 .vscode/
 .idea/
 
+# Coverage reports
+coverage/
+
 # Temporary files
 function.zip
 temp/
