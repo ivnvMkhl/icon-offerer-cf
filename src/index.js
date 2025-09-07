@@ -16,7 +16,7 @@ import { callAIAPI } from './aiService.js';
  * @param {Object} context - Контекст выполнения
  * @returns {Promise<Object>} HTTP ответ
  */
-module.exports.handler = async function (event, context) {
+const handler = async function (event, context) {
   // Обработка preflight OPTIONS запросов
   if (event.httpMethod === "OPTIONS") {
     return handlePreflightRequest();
