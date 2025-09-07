@@ -37,8 +37,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Run tests
-      run: npm run test
+    - name: Run tests with coverage
+      run: npm run test:coverage
       env:
         AI_API_TOKEN: ${{ secrets.AI_API_TOKEN }}
         AI_API_URL: ${{ secrets.AI_API_URL }}
@@ -51,6 +51,7 @@ jobs:
         path: |
           test-results/
           coverage/
+        if-no-files-found: ignore
         retention-days: 7
 
   check-changes:
