@@ -53,19 +53,31 @@ jobs:
           coverage/
         retention-days: 7
 
+  check-changes:
+    name: Check for deployment changes
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.changes.outputs.src || steps.changes.outputs.config }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Check for changes
+      uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          src:
+            - 'src/**'
+          config:
+            - '.functionconfig.json'
+
   deploy:
     name: Deploy to Yandex Cloud
-    needs: test
+    needs: [test, check-changes]
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'push' && 
-      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') &&
-      (
-        contains(join(github.event.head_commit.modified, ','), 'src/') ||
-        contains(join(github.event.head_commit.added, ','), 'src/') ||
-        contains(join(github.event.head_commit.modified, ','), '.functionconfig.json') ||
-        contains(join(github.event.head_commit.added, ','), '.functionconfig.json')
-      )
+    if: needs.check-changes.outputs.deploy == 'true'
     
     steps:
     - name: Checkout code
