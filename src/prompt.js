@@ -2,7 +2,7 @@
  * AI промпт для поиска иконок
  */
 
-const { DEFAULT_ICON_COUNT } = require('./validation');
+import { DEFAULT_ICON_COUNT } from './validation.js';
 
 /**
  * Создает системный промпт для AI
@@ -18,7 +18,7 @@ function getSystemPrompt(quantity = DEFAULT_ICON_COUNT) {
 3. Возвращай ровно ${quantity} вариантов иконок.
 4. Первая иконка в списке — наиболее подходящая по запросу, остальные — альтернативные варианты в порядке убывания релевантности.
 5. Используй только официальные названия иконок из запрашиваемой платформы.
-6. Для платформы unicode возвращай коды в формате ["U+XXXX", "U+XXXX", ...].
+6. Для платформы unicode возвращай Unicode символы напрямую, например: ["❤", "💖", "♥"].
 7. Если не можешь найти ${quantity} подходящих иконок, верни столько, сколько найдешь (но не менее 1).
 
 Доступные библиотеки иконок:
@@ -40,7 +40,7 @@ function getSystemPrompt(quantity = DEFAULT_ICON_COUNT) {
 - FontAwesome: fa-* (Example: fa-history)
 - Feather: lowercase-with-dashes (Example: history)
 - Ionicons: ion-* (Example: ion-md-history)
-- Unicode: U+XXXX (Example: U+1F4AC)`;
+- Unicode: Unicode символы напрямую (Example: ❤, 💖, ♥)`;
 }
 
 /**
@@ -81,7 +81,7 @@ function createPrompt(platform, request, quantity = DEFAULT_ICON_COUNT) {
   };
 }
 
-module.exports = {
+export {
   getSystemPrompt,
   getUserPrompt,
   createPrompt,

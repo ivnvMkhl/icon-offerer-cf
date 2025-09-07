@@ -1,14 +1,14 @@
-const {
+import {
   handlePreflightRequest,
   createMethodNotAllowedResponse,
   createValidationErrorResponse,
   createConfigurationErrorResponse,
   createSuccessResponse,
   createProcessingErrorResponse,
-} = require('./cors');
+} from './cors.js';
 
-const { validateRequestBody, validateEnvironmentVariables } = require('./validation');
-const { callAIAPI } = require('./aiService');
+import { validateRequestBody, validateEnvironmentVariables } from './validation.js';
+import { callAIAPI } from './aiService.js';
 
 /**
  * Основной обработчик Cloud Function
@@ -109,3 +109,5 @@ module.exports.handler = async function (event, context) {
     );
   }
 };
+
+export { handler };

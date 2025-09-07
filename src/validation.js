@@ -210,10 +210,11 @@ function validateAIResponse(responseData, expectedCount = DEFAULT_ICON_COUNT) {
     };
   }
 
-  if (responseData.icon_names.length !== expectedCount) {
+  // Проверяем количество иконок (AI может вернуть больше, чем запрошено)
+  if (responseData.icon_names.length < 1) {
     return {
       isValid: false,
-      error: `Expected ${expectedCount} icons, received: ${responseData.icon_names.length}`,
+      error: `Expected at least 1 icon, received: ${responseData.icon_names.length}`,
     };
   }
 
@@ -236,8 +237,8 @@ function validateAIResponse(responseData, expectedCount = DEFAULT_ICON_COUNT) {
  * @returns {Object} Результат валидации
  */
 function validateEnvironmentVariables() {
-  const token = process.env.TOKEN;
-  const baseUrl = process.env.BASE_URL;
+  const token = process.env.AI_API_TOKEN;
+  const baseUrl = process.env.AI_API_URL;
 
   if (!token) {
     return {
@@ -260,7 +261,7 @@ function validateEnvironmentVariables() {
   return { isValid: true };
 }
 
-module.exports = {
+export {
   SUPPORTED_PLATFORMS,
   MAX_REQUEST_LENGTH,
   MIN_REQUEST_LENGTH,

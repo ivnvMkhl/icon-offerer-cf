@@ -123,7 +123,7 @@ function createProcessingErrorResponse(message, details, requestId, isApiError =
   );
 }
 
-module.exports = {
+export {
   CORS_HEADERS,
   createCorsResponse,
   handlePreflightRequest,

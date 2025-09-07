@@ -1,5 +1,42 @@
 {
+  "name": "icon-offerer-cf",
+  "version": "1.0.0",
+  "description": "Cloud function for icon search using AI API",
+  "main": "src/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run tests/integration.test.js",
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "yandex-cloud",
+    "cloud-function",
+    "ai",
+    "icons",
+    "search",
+    "api"
+  ],
+  "author": "iMkhl",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivnvMkhl/icon-offerer-cf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ivnvMkhl/icon-offerer-cf/issues"
+  },
+  "homepage": "https://github.com/ivnvMkhl/icon-offerer-cf#readme",
   "dependencies": {
     "ycnf": "^1.1.2"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.2",
+    "vitest": "^3.2.4"
   }
 }

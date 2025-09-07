@@ -2,8 +2,8 @@
  * Сервис для работы с AI API
  */
 
-const { createPrompt } = require('./prompt');
-const { validateAIResponse, DEFAULT_ICON_COUNT } = require('./validation');
+import { createPrompt } from './prompt.js';
+import { validateAIResponse, DEFAULT_ICON_COUNT } from './validation.js';
 
 /**
  * Отправляет запрос к AI API
@@ -13,8 +13,8 @@ const { validateAIResponse, DEFAULT_ICON_COUNT } = require('./validation');
  * @returns {Promise<Object>} Результат запроса к AI
  */
 async function callAIAPI(platform, request, quantity = DEFAULT_ICON_COUNT) {
-  const token = process.env.TOKEN;
-  const baseUrl = process.env.BASE_URL;
+  const token = process.env.AI_API_TOKEN;
+  const baseUrl = process.env.AI_API_URL;
 
   const prompt = createPrompt(platform, request, quantity);
 
@@ -62,6 +62,6 @@ async function callAIAPI(platform, request, quantity = DEFAULT_ICON_COUNT) {
   return responseData;
 }
 
-module.exports = {
+export {
   callAIAPI,
 };

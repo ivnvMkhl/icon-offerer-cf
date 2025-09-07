@@ -92,10 +92,10 @@ curl -X POST https://your-function-url \
 
 ### Переменные окружения
 
-Установите следующие переменные окружения в Yandex Cloud Function:
+Установите следующие переменные окружения в Yandex Cloud Function для работы функции и .env файл для локального запуска тестов:
 
-
-- `BASE_URL` - URL эндпоинта AI API
+- `AI_API_URL` - URL эндпоинта AI API
+- `AI_API_TOKEN` - Токен для AI API
 
 ### Команды для развертывания
 
