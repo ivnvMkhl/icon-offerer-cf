@@ -1,0 +1,10 @@
+.env
+node_modules/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary files
+function.zip
+temp/

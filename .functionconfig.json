@@ -1,0 +1,10 @@
+{
+  "name": "icon-offerer-cf",
+  "runtime": "nodejs22",
+  "memory": 128,
+  "timeout": 30,
+  "public": true,
+  "logging": true,
+  "description": "Template function for YCNF CLI",
+  "entrypoint": "index.handler"
+}
