@@ -61,10 +61,10 @@ jobs:
       github.event_name == 'push' && 
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') &&
       (
-        contains(github.event.head_commit.modified, 'src/') ||
-        contains(github.event.head_commit.added, 'src/') ||
-        contains(github.event.head_commit.modified, '.functionconfig.json') ||
-        contains(github.event.head_commit.added, '.functionconfig.json')
+        contains(join(github.event.head_commit.modified, ','), 'src/') ||
+        contains(join(github.event.head_commit.added, ','), 'src/') ||
+        contains(join(github.event.head_commit.modified, ','), '.functionconfig.json') ||
+        contains(join(github.event.head_commit.added, ','), '.functionconfig.json')
       )
     
     steps:
