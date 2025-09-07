@@ -3,7 +3,7 @@
  */
 
 const { createPrompt } = require('./prompt');
-const { validateAIResponse } = require('./validation');
+const { validateAIResponse, DEFAULT_ICON_COUNT } = require('./validation');
 
 /**
  * Отправляет запрос к AI API
@@ -12,7 +12,7 @@ const { validateAIResponse } = require('./validation');
  * @param {number} quantity - Количество иконок для возврата
  * @returns {Promise<Object>} Результат запроса к AI
  */
-async function callAIAPI(platform, request, quantity = 3) {
+async function callAIAPI(platform, request, quantity = DEFAULT_ICON_COUNT) {
   const token = process.env.TOKEN;
   const baseUrl = process.env.BASE_URL;
 

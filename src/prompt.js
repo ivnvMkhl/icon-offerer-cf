@@ -2,12 +2,14 @@
  * AI промпт для поиска иконок
  */
 
+const { DEFAULT_ICON_COUNT } = require('./validation');
+
 /**
  * Создает системный промпт для AI
  * @param {number} quantity - Количество иконок для возврата
  * @returns {string} Системный промпт
  */
-function getSystemPrompt(quantity = 5) {
+function getSystemPrompt(quantity = DEFAULT_ICON_COUNT) {
   return `Ты — эксперт по дизайн-системам и иконографике. Твоя задача — по описанию от пользователя (request) подобрать точные названия иконок из указанной библиотеки (platform).
 
 КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА:
@@ -61,7 +63,7 @@ function getUserPrompt(platform, request) {
  * @param {number} quantity - Количество иконок для возврата
  * @returns {Object} Промпт для отправки в AI API
  */
-function createPrompt(platform, request, quantity = 3) {
+function createPrompt(platform, request, quantity = DEFAULT_ICON_COUNT) {
   return {
     model: "deepseek-coder",
     messages: [
