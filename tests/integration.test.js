@@ -72,8 +72,8 @@ describe('Интеграционные тесты с реальным AI API', (
 
     const iconNames = body.data.icon_names;
     expect(iconNames.some(icon => 
-      icon.includes('❤') || icon.includes('💖') || icon.includes('♥') || 
-      icon.includes('💕') || icon.includes('💗') || icon.includes('💘')
+      icon.includes('U+2764') || icon.includes('U+1F496') || icon.includes('U+2665') || 
+      icon.includes('U+1F495') || icon.includes('U+1F497') || icon.includes('U+1F498')
     )).toBe(true);
     
     console.log('✅ Найденные Unicode иконки:', body.data.icon_names);
