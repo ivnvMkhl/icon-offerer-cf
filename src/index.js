@@ -5,10 +5,16 @@ import {
   createConfigurationErrorResponse,
   createSuccessResponse,
   createProcessingErrorResponse,
+  createAccessDeniedResponse,
 } from './cors.js';
 
 import { validateRequestBody, validateEnvironmentVariables } from './validation.js';
 import { callAIAPI } from './aiService.js';
+import { 
+  extractUserIP, 
+  extractSmartToken, 
+  validateSmartCaptchaToken 
+} from './smartCaptcha.js';
 
 /**
  * Основной обработчик Cloud Function
@@ -31,6 +37,19 @@ const handler = async function (event, context) {
       envValidation.error,
       envValidation.message,
       envValidation.details
+    );
+  }
+
+  // Валидация SmartCaptcha токена (только для POST запросов)
+  const smartToken = extractSmartToken(event);
+  const userIP = extractUserIP(event);
+  
+  const captchaValidation = await validateSmartCaptchaToken(smartToken, userIP);
+  if (!captchaValidation.isValid) {
+    return createAccessDeniedResponse(
+      captchaValidation.error,
+      captchaValidation.message,
+      captchaValidation.details
     );
   }
 

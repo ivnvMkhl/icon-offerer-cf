@@ -123,6 +123,21 @@ function createProcessingErrorResponse(message, details, requestId, isApiError =
   );
 }
 
+/**
+ * Создает ответ об ошибке доступа (403)
+ * @param {string} error - Тип ошибки
+ * @param {string} message - Сообщение об ошибке
+ * @param {string} details - Детали ошибки
+ * @returns {Object} Ошибка доступа
+ */
+function createAccessDeniedResponse(error, message, details) {
+  return createCorsResponse(403, {
+    error,
+    message,
+    details,
+  });
+}
+
 export {
   CORS_HEADERS,
   createCorsResponse,
@@ -132,4 +147,5 @@ export {
   createConfigurationErrorResponse,
   createSuccessResponse,
   createProcessingErrorResponse,
+  createAccessDeniedResponse,
 };

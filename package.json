@@ -8,10 +8,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "test:integration": "vitest run tests/integration.test.js",
+    "test": "NODE_ENV=test vitest run",
+    "test:coverage": "NODE_ENV=test vitest run --coverage",
+    "test:watch": "NODE_ENV=test vitest",
+    "test:integration": "NODE_ENV=test vitest run tests/integration.test.js",
     "start": "node src/index.js",
     "dev": "node --watch src/index.js"
   },

@@ -239,13 +239,15 @@ function validateAIResponse(responseData, expectedCount = DEFAULT_ICON_COUNT) {
 function validateEnvironmentVariables() {
   const token = process.env.AI_API_TOKEN;
   const baseUrl = process.env.AI_API_URL;
+  const captchaSecret = process.env.CAPTCHA_SECRET;
+  const testMode = process.env.NODE_ENV === 'test' || process.env.CAPTCHA_TEST_MODE === 'true';
 
   if (!token) {
     return {
       isValid: false,
       error: "Configuration Error",
       message: "Missing authorization token",
-      details: "Environment variable TOKEN is not set",
+      details: "Environment variable AI_API_TOKEN is not set",
     };
   }
 
@@ -254,7 +256,17 @@ function validateEnvironmentVariables() {
       isValid: false,
       error: "Configuration Error",
       message: "Missing base URL",
-      details: "Environment variable BASE_URL is not set",
+      details: "Environment variable AI_API_URL is not set",
+    };
+  }
+
+  // В тестовом режиме CAPTCHA_SECRET не обязателен
+  if (!testMode && !captchaSecret) {
+    return {
+      isValid: false,
+      error: "Configuration Error",
+      message: "Missing SmartCaptcha secret",
+      details: "Environment variable CAPTCHA_SECRET is not set",
     };
   }
 
