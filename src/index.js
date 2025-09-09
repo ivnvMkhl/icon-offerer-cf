@@ -23,12 +23,15 @@ import {
  * @returns {Promise<Object>} HTTP ответ
  */
 const handler = async function (event, context) {
+  // Извлекаем origin для CORS обработки
+  const origin = event.headers?.origin || event.headers?.Origin || null;
+  
   if (event.httpMethod === "OPTIONS") {
-    return handlePreflightRequest();
+    return handlePreflightRequest(origin);
   }
 
   if (event.httpMethod !== "POST") {
-    return createMethodNotAllowedResponse();
+    return createMethodNotAllowedResponse(origin);
   }
 
   const envValidation = validateEnvironmentVariables();
@@ -36,7 +39,8 @@ const handler = async function (event, context) {
     return createConfigurationErrorResponse(
       envValidation.error,
       envValidation.message,
-      envValidation.details
+      envValidation.details,
+      origin
     );
   }
 
@@ -49,7 +53,8 @@ const handler = async function (event, context) {
     return createAccessDeniedResponse(
       captchaValidation.error,
       captchaValidation.message,
-      captchaValidation.details
+      captchaValidation.details,
+      origin
     );
   }
 
@@ -57,7 +62,9 @@ const handler = async function (event, context) {
     return createValidationErrorResponse(
       "Bad Request",
       "Missing request body",
-      "Request must contain JSON body with platform and request fields"
+      "Request must contain JSON body with platform and request fields",
+      {},
+      origin
     );
   }
 
@@ -68,7 +75,9 @@ const handler = async function (event, context) {
     return createValidationErrorResponse(
       "Invalid JSON",
       "Invalid JSON in request body",
-      "Check JSON syntax. Error: " + parseError.message
+      "Check JSON syntax. Error: " + parseError.message,
+      {},
+      origin
     );
   }
 
@@ -87,7 +96,8 @@ const handler = async function (event, context) {
       bodyValidation.error,
       bodyValidation.message,
       bodyValidation.details,
-      additionalData
+      additionalData,
+      origin
     );
   }
 
@@ -103,7 +113,7 @@ const handler = async function (event, context) {
       request: bodyValidation.request,
       quantity: bodyValidation.quantity,
       model: "deepseek-coder",
-    });
+    }, origin);
   } catch (error) {
     console.error("Error details:", {
       message: error.message,
@@ -117,7 +127,8 @@ const handler = async function (event, context) {
       "Error processing request",
       error.message,
       context.awsRequestId,
-      isApiError
+      isApiError,
+      origin
     );
   }
 };

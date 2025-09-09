@@ -15,13 +15,18 @@ const CORS_HEADERS = {
  * @param {number} statusCode - HTTP статус код
  * @param {Object} body - Тело ответа
  * @param {Object} additionalHeaders - Дополнительные заголовки
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Ответ с CORS заголовками
  */
-function createCorsResponse(statusCode, body, additionalHeaders = {}) {
+function createCorsResponse(statusCode, body, additionalHeaders = {}, origin = null) {
   return {
     statusCode,
     headers: {
-      ...CORS_HEADERS,
+      "Access-Control-Allow-Origin": origin || "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, smart-token, Smart-Token",
+      "Access-Control-Max-Age": "86400",
+      "Content-Type": "application/json",
       ...additionalHeaders,
     },
     body: JSON.stringify(body),
@@ -30,19 +35,33 @@ function createCorsResponse(statusCode, body, additionalHeaders = {}) {
 
 /**
  * Обрабатывает preflight OPTIONS запросы
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} CORS preflight ответ
  */
-function handlePreflightRequest() {
-  return createCorsResponse(200, {
-    message: "CORS preflight successful",
-  });
+function handlePreflightRequest(origin = null) {
+  // Для OPTIONS запросов всегда возвращаем успешный ответ с CORS заголовками
+  // без проверки SmartCaptcha токена
+  return {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": origin || "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, smart-token, Smart-Token",
+      "Access-Control-Max-Age": "86400",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message: "CORS preflight successful",
+    }),
+  };
 }
 
 /**
  * Создает ответ об ошибке метода
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Ошибка метода
  */
-function createMethodNotAllowedResponse() {
+function createMethodNotAllowedResponse(origin = null) {
   return createCorsResponse(
     405,
     {
@@ -52,7 +71,8 @@ function createMethodNotAllowedResponse() {
     },
     {
       Allow: "POST",
-    }
+    },
+    origin
   );
 }
 
@@ -62,15 +82,16 @@ function createMethodNotAllowedResponse() {
  * @param {string} message - Сообщение об ошибке
  * @param {string} details - Детали ошибки
  * @param {Object} additionalData - Дополнительные данные
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Ошибка валидации
  */
-function createValidationErrorResponse(error, message, details, additionalData = {}) {
+function createValidationErrorResponse(error, message, details, additionalData = {}, origin = null) {
   return createCorsResponse(400, {
     error,
     message,
     details,
     ...additionalData,
-  });
+  }, {}, origin);
 }
 
 /**
@@ -78,28 +99,30 @@ function createValidationErrorResponse(error, message, details, additionalData =
  * @param {string} error - Тип ошибки
  * @param {string} message - Сообщение об ошибке
  * @param {string} details - Детали ошибки
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Ошибка конфигурации
  */
-function createConfigurationErrorResponse(error, message, details) {
+function createConfigurationErrorResponse(error, message, details, origin = null) {
   return createCorsResponse(500, {
     error,
     message,
     details,
-  });
+  }, {}, origin);
 }
 
 /**
  * Создает успешный ответ с данными
  * @param {Object} data - Данные ответа
  * @param {Object} meta - Метаданные
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Успешный ответ
  */
-function createSuccessResponse(data, meta) {
+function createSuccessResponse(data, meta, origin = null) {
   return createCorsResponse(200, {
     success: true,
     data,
     meta,
-  });
+  }, {}, origin);
 }
 
 /**
@@ -108,9 +131,10 @@ function createSuccessResponse(data, meta) {
  * @param {string} details - Детали ошибки
  * @param {string} requestId - ID запроса
  * @param {boolean} isApiError - Является ли ошибка API ошибкой
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Ошибка обработки
  */
-function createProcessingErrorResponse(message, details, requestId, isApiError = false) {
+function createProcessingErrorResponse(message, details, requestId, isApiError = false, origin = null) {
   return createCorsResponse(
     isApiError ? 502 : 400,
     {
@@ -119,7 +143,9 @@ function createProcessingErrorResponse(message, details, requestId, isApiError =
       details,
       request_id: requestId,
       timestamp: new Date().toISOString(),
-    }
+    },
+    {},
+    origin
   );
 }
 
@@ -128,14 +154,15 @@ function createProcessingErrorResponse(message, details, requestId, isApiError =
  * @param {string} error - Тип ошибки
  * @param {string} message - Сообщение об ошибке
  * @param {string} details - Детали ошибки
+ * @param {string} origin - Домен запроса (из заголовка Origin)
  * @returns {Object} Ошибка доступа
  */
-function createAccessDeniedResponse(error, message, details) {
+function createAccessDeniedResponse(error, message, details, origin = null) {
   return createCorsResponse(403, {
     error,
     message,
     details,
-  });
+  }, {}, origin);
 }
 
 export {
